@@ -3,6 +3,34 @@ Self-Driving Car Engineer Nanodegree Program
 
 ---
 
+## Describe the effect each of the P, I, D components had in your implementation.
+Below, I have described the meaning of each of the three terms, P, I, and D.
+I have implemented the Twiddle algorithm for tuning the parameters, and describe below my observations, as the algorithm converged.
+
+- The P component describes an error proportional to the CTE (cross track error). If the CTE is large, the corresponding P error will be large. In the current project, this will correspond to a large steering angle, positive or negative depending on the direction. With Twiddle, the P term was the first to converge, such that the car stayed on the road. However, at first, this resulted in very unstable behaviour where the car kept overshooting the center trajectory.
+- The I term describes an error proportional to the integral of the CTE. It thus depends on all past values of the CTE and is used to account for a potential offset/bias in the steering mechanism of the car. As it appears that there's only a very small bias in the simulator car, this was the last parameter to converge.
+- The D term describes an error proportional to the differential of the CTE. It thus depends on the rate of change of the steering angle. It is calculated as the difference between the current and previous steering angles. The D term serves to dampen the wobbling behaviour introduced by the P term. A high P term must so to say be stabilized by a corresponding higher D term. With Twiddle, this was clearly seen, as the D term increased along with the P term.
+
+## Describe how the final hyperparameters were chosen.
+As described above, I used the Twiddle algorithm to fit all three hyperparameters.
+
+Ideally, one would let the car traverse the entire track before calculating the total error used in the Twiddle algorithm.
+However, since initial parameters did not succeed in having the car stay on the road, and since evaluation time increases linearly with driving time, I used a coarse-to-fine approach:
+
+1. I first limited the number of iterations (callbacks from the simulator) to 200, and initialized all parameters (Kp, Kd, and Ki) with 0. The increments were all set to 0.1.
+After 40 iterations, the algorithm converged, with very coarse/rough estimates of the three parameters (Kp=0.771561, Kd=0.199, Ki=0).
+
+2. I then increased the number of iterations to 500 and initialized both parameters and increments to the converged values of the first run. After 120 iterations, the algorithm converged, with refined estimates of the three parameters (Kp=0.485012, Kd=4.25632, Ki=0.000852756).
+
+3. Finally, I increased the number of iterations to 1500, corresponding almost to an entire lap on the track. The execution time of the algorithm increased with a factor of three compared to the second run. After 53 iterations, the final estimates of the three parameters were found to be:
+    - Kp = 0.871971
+    - Kd = 7.38248
+    - Ki = 0.00466666
+
+With these parameters, the car traverses the entire track with no tires leaving the drivable portion of the track surface.
+
+---
+
 ## Dependencies
 
 * cmake >= 3.5
