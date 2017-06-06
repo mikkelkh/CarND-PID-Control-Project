@@ -29,6 +29,10 @@ After 40 iterations, the algorithm converged, with very coarse/rough estimates o
 
 With these parameters, the car traverses the entire track with no tires leaving the drivable portion of the track surface.
 
+The values match my expectations pretty well.
+Kp and Kd are both positive (although nothing in Twiddle forces them to be so), which was expected.
+Ki is close to 0, which was also expected, as I haven't noticed any steering bias when driving the car simulator manually.
+
 ---
 
 ## Dependencies
